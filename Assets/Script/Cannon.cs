@@ -1,40 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using InvalidOperationException = System.InvalidOperationException;
 public class Cannon : MonoBehaviour
 {
-    public bool isLoaded = false;
     [SerializeField] private Transform pivotPoint;
-    [SerializeField] private Rigidbody projectile;
+    [SerializeField] private Rigidbody[] projectiles;
+    
+    private bool isLoaded = false;
+    private int index;
+    
     public void Load()
     {
-        print("Load()");
+        if (index >= projectiles.Length) throw new InvalidOperationException("Out of knights.");
         isLoaded = true;
-
-        projectile.useGravity = false;
-        projectile.transform.position = pivotPoint.position;
+        projectiles[index].useGravity = false;
+        projectiles[index].transform.position = pivotPoint.position;
+        projectiles[index].transform.rotation = pivotPoint.rotation;
     }
     public void Fire()
     {
-        print("Fire()");
         isLoaded = false;
-
-        projectile.useGravity = true;
-        projectile.AddForce(pivotPoint.up * 1000);
-    }
-    private void Update()
-    {
-        
+        projectiles[index].useGravity = true;
+        projectiles[index].AddForce(pivotPoint.up * 1000);
+        index++;
     }
     private void OnGUI()
     {
-        if (GUI.Button(new Rect(100, 100, 150, 75), "Load"))
-        {
-            if (!isLoaded) Load();
-        }
-        if (GUI.Button(new Rect(100, 250, 150, 75), "Fire"))
-        {
-            if (isLoaded) Fire();
-        }
+        if (GUI.Button(new Rect(100, 100, 150, 75), "Load") && !isLoaded) Load();
+        if (GUI.Button(new Rect(100, 250, 150, 75), "Fire") && isLoaded) Fire();
     }
 }
