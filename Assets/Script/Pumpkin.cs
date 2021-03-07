@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Pumpkin : MonoBehaviour
 {
-    [SerializeField] private Rigidbody projectile;
+    [SerializeField] private Rigidbody pumpkin;
 
     private GameObject pumpkinSplit1;
 
     private void Start()
     {
-        projectile = GetComponent<Rigidbody>();
+        pumpkin = GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -18,13 +18,13 @@ public class Pumpkin : MonoBehaviour
         //if (isLoaded)
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision _collision)
     {
-        print(projectile.velocity.magnitude);
-        if (projectile.velocity.magnitude > 10)
+        if (_collision.gameObject.name.Contains("Knight"))
         {
-            print("OW");
-            //Instantiate(pumpkin2.gameObject, transform);
+            Rigidbody knightRigidbody = _collision.gameObject.GetComponent<Rigidbody>();
+            print(knightRigidbody.constraints);
+            knightRigidbody.constraints = RigidbodyConstraints.None;
         }
     }
 }
