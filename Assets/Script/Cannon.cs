@@ -3,13 +3,14 @@ using InvalidOperationException = System.InvalidOperationException;
 public class Cannon : MonoBehaviour
 {
     [SerializeField] private Transform pivotPoint;
+    [SerializeField] private CameraFollow cF;
     [SerializeField] private Rigidbody[] projectiles;
-    
     private bool isLoaded = false;
-    private int index;
-    
+    private int index = -1;
+    private void Update() { if (index >= 0) cF.target = projectiles[index].transform; }
     public void Load()
     {
+        index++;
         if (index >= projectiles.Length) throw new InvalidOperationException("Out of knights.");
         isLoaded = true;
         projectiles[index].useGravity = false;
@@ -21,7 +22,6 @@ public class Cannon : MonoBehaviour
         isLoaded = false;
         projectiles[index].useGravity = true;
         projectiles[index].AddForce(pivotPoint.up * 1000);
-        index++;
     }
     private void OnGUI()
     {
