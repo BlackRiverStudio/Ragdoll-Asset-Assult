@@ -23,25 +23,22 @@ public class Pumpkin : MonoBehaviour
         if (_collision.gameObject.name.Contains("Knight"))
         {
             Rigidbody knightRb = _collision.gameObject.GetComponent<Rigidbody>();
-            Thing(knightRb);
-            //float knightKinetic = Thing(knightRb);
-            knightRb.constraints = RigidbodyConstraints.None;
-            if (KineticEnergy(knightRb) > 5)
+            Vector3 heading = transform.position - knightRb.transform.position;
+            Vector3 direction = heading / heading.magnitude;
+            float knightKinetic = KineticEnergy(knightRb);
+            print(knightRb.gameObject.name + ": " + direction.z + " + " + knightKinetic + " = " + direction.z * knightKinetic);
+            if (knightKinetic > 10) { print("10+"); }
+            else if (knightKinetic > 20)
             {
-                print("big hit");
+                print("20+");
+                pumpkin.gameObject.SetActive(false);
                 foreach (Rigidbody quarter in pumpkinQuarters)
                 {
                     quarter.gameObject.SetActive(true);
-                    quarter.AddExplosionForce(KineticEnergy(knightRb), transform.position, radius);
+                    quarter.AddExplosionForce(direction.z * knightKinetic * 10, transform.position, radius);
                 }
             }
+            knightRb.constraints = RigidbodyConstraints.None;
         }
-    }
-
-    private void Thing(Rigidbody _rb)
-    {
-        Vector3 heading = transform.position - _rb.transform.position;
-        Vector3 direction = heading / heading.magnitude;
-        print(_rb.gameObject.name + ": " + direction.z + " + " + KineticEnergy(_rb) + " = " + direction.z * KineticEnergy(_rb));
     }
 }
