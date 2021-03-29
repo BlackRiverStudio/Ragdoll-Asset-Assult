@@ -5,12 +5,16 @@ using UnityEngine;
 public class Pumpkin : MonoBehaviour
 {
     [SerializeField] private Rigidbody pumpkin;
+    [SerializeField] private Rigidbody[] pumpkinHalves = new Rigidbody[2];
     [SerializeField] private Rigidbody[] pumpkinQuarters = new Rigidbody[4];
     [SerializeField] private float radius = 3;
 
-    private void Start() { foreach (Rigidbody quarter in pumpkinQuarters) quarter.gameObject.SetActive(false); }
-
-    private void Update() { }
+    private void Start()
+    {
+        pumpkin.gameObject.SetActive(true);
+        foreach (Rigidbody half    in pumpkinHalves)   half.gameObject.SetActive(false);
+        foreach (Rigidbody quarter in pumpkinQuarters) quarter.gameObject.SetActive(false);
+    }
 
     /// <summary></summary>
     /// <param name="_rb"></param>
@@ -20,25 +24,35 @@ public class Pumpkin : MonoBehaviour
 
     public void OnCollisionEnter(Collision _collision)
     {
-        if (_collision.gameObject.name.Contains("Knight"))
+        Vector3 heading = transform.position - _collision.transform.position;
+        Vector3 direction = heading / heading.magnitude;
+        float kinetic = KineticEnergy(_collision.gameObject.GetComponent<Rigidbody>());
+            
+        print(_collision.gameObject.name + ": " + direction.z + " + " + kinetic + " = " + direction.z * kinetic);
+        
+        if (_collision.gameObject.name.Contains("Knight")) _collision.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        
+        if (kinetic > 20)
         {
-            Rigidbody knightRb = _collision.gameObject.GetComponent<Rigidbody>();
-            Vector3 heading = transform.position - knightRb.transform.position;
-            Vector3 direction = heading / heading.magnitude;
-            float knightKinetic = KineticEnergy(knightRb);
-            print(knightRb.gameObject.name + ": " + direction.z + " + " + knightKinetic + " = " + direction.z * knightKinetic);
-            if (knightKinetic > 10) { print("10+"); }
-            else if (knightKinetic > 20)
+            print("20+");
+            pumpkin.gameObject.SetActive(false);
+            
+            foreach (Rigidbody quarter in pumpkinQuarters)
             {
-                print("20+");
-                pumpkin.gameObject.SetActive(false);
-                foreach (Rigidbody quarter in pumpkinQuarters)
-                {
-                    quarter.gameObject.SetActive(true);
-                    quarter.AddExplosionForce(direction.z * knightKinetic * 10, transform.position, radius);
-                }
+                quarter.gameObject.SetActive(true);
+                quarter.AddExplosionForce(direction.z * kinetic, transform.position, radius);
             }
-            knightRb.constraints = RigidbodyConstraints.None;
+        }
+        else if (kinetic > 10)
+        {
+            print("10+");
+            pumpkin.gameObject.SetActive(false);
+            
+            foreach (Rigidbody half in pumpkinHalves)
+            {
+                half.gameObject.SetActive(true);
+                half.AddExplosionForce(direction.z * kinetic, transform.position, radius);
+            }
         }
     }
 }

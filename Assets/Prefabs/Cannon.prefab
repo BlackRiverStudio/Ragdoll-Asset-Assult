@@ -34271,7 +34271,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b05de05e27e3fdd48856773e2c8136df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pivot: {fileID: 4455203886796076475}
+  pivotPoint: {fileID: 2118352716100744616}
+  cF: {fileID: 0}
+  projectiles:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &5567411688117515957
 GameObject:
   m_ObjectHideFlags: 0
